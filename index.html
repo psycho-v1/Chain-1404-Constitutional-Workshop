@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Constitutional Workshop · Chain 1404</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/workshop.css" />
+</head>
+<body data-page="home">
+<div id="cw-header"></div>
+<main class="container py-4 py-lg-5">
+
+  <div class="row g-4 align-items-stretch">
+    <div class="col-lg-7">
+      <div class="kicker mb-2">Public formation record</div>
+      <h1 class="display-5 fw-bold mb-3">Write how this DAO <em style="color:var(--gold)">must</em> be formed.</h1>
+      <p class="lead" style="color:var(--muted)">This is a shared notebook on Chain 1404. People take an equal seat, propose short rules, vote yes or no, and lock a rule when enough seats agree. It is not a bank and it does not hold a treasury.</p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-gold px-4" href="guide.html"><i class="fa-solid fa-book-open me-2"></i>Start here</a>
+        <a class="btn btn-ghost px-4" href="seats.html"><i class="fa-solid fa-chair me-2"></i>Get a seat</a>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="hero-card p-4 h-100">
+        <div class="kicker mb-3">Live on Chain 1404</div>
+        <div class="row g-3">
+          <div class="col-6 stat"><b data-k="active">—</b><span>Active seats</span></div>
+          <div class="col-6 stat"><b data-k="posted">—</b><span>Clauses posted</span></div>
+          <div class="col-6 stat"><b data-k="sealed">—</b><span>Sealed</span></div>
+          <div class="col-6 stat"><b data-k="issued">—</b><span>Seats ever issued</span></div>
+        </div>
+        <hr class="border-secondary opacity-25 my-3" />
+        <div class="small" style="color:var(--muted)">Record address</div>
+        <div class="addr" data-k="addr">—</div>
+      </div>
+    </div>
+  </div>
+  <div class="row g-4 mt-1">
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <i class="fa-solid fa-wallet mb-3" style="color:var(--gold)"></i>
+        <h5>1. Sit</h5>
+        <p class="mb-0" style="color:var(--muted)">Connect a wallet and pay the seat bond. It is burned. One wallet, one seat.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <i class="fa-solid fa-pen-nib mb-3" style="color:var(--gold)"></i>
+        <h5>2. Write</h5>
+        <p class="mb-0" style="color:var(--muted)">Propose a short SHALL or SHALL NOT rule in one of five articles.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <i class="fa-solid fa-lock mb-3" style="color:var(--gold)"></i>
+        <h5>3. Seal</h5>
+        <p class="mb-0" style="color:var(--muted)">After three days, if enough seated people agree, anyone can lock the clause.</p>
+      </div>
+    </div>
+  </div>
+  <div class="glass p-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0">Latest clauses</h5>
+      <a class="btn btn-ghost btn-sm" href="ledger.html">Full ledger</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>ID</th><th>Article</th><th>Title</th><th>Status</th><th>Yea</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="5" style="color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+<div id="cw-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+<script src="js/abi.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/record.js"></script>
+</body>
+</html>

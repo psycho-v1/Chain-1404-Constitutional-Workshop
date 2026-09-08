@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Write a clause · Workshop</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/workshop.css" />
+</head>
+<body data-page="submit">
+<div id="cw-header"></div>
+<main class="container py-4 py-lg-5">
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="kicker mb-2">Normative text</div>
+      <h1 class="fw-bold">Write a clause</h1>
+      <p style="color:var(--muted)">You need a seat first. Bond to sit: <b id="bondHint">—</b>.</p>
+      <form id="submitForm" class="glass p-4">
+        <div class="mb-3">
+          <label class="form-label" for="article">Article</label>
+          <select id="article" class="form-select">
+            <option value="1">1 · Membership</option>
+            <option value="2">2 · Governor</option>
+            <option value="3">3 · Scope</option>
+            <option value="4">4 · Infrastructure</option>
+            <option value="5">5 · Amendment</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="title">Title (max 140 characters)</label>
+          <input id="title" class="form-control" maxlength="140" placeholder="Two signatures for large transfers" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="body">The rule (max 2048 characters)</label>
+          <textarea id="body" class="form-control" rows="8" maxlength="2048" placeholder="The DAO SHALL …"></textarea>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-gold" type="submit">Post clause</button>
+          <button class="btn btn-ghost" type="button" id="previewBtn">Preview hashes</button>
+          <button class="btn btn-ghost" type="button" id="attestBtn">Get a seat first</button>
+        </div>
+        <pre class="mono mt-3 mb-0" id="hashBox"></pre>
+      </form>
+    </div>
+    <div class="col-lg-5">
+      <div class="glass p-4 mb-3">
+        <h5>Example you can adapt</h5>
+        <div class="example">
+          <b>Article:</b> Governor<br>
+          <b>Title:</b> No silent parameter change<br>
+          <b>Body:</b> The Governor SHALL publish any change to quorum, delay, or treasury limit in a public proposal for at least seven days before it can execute.
+        </div>
+      </div>
+      <div class="glass p-4">
+        <h5>Words that work</h5>
+        <p style="color:var(--muted)" class="mb-2">Start with SHALL or SHALL NOT. Name the actor. Name the action. Avoid slogans.</p>
+        <p class="mb-0" style="color:var(--muted)">A seat may have only five unsealed clauses at a time.</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+<div id="cw-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+<script src="js/abi.js"></script>
+<script src="js/shell.js"></script>
+<script src="js/record.js"></script>
+</body>
+</html>

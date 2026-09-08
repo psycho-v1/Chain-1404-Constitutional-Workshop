@@ -1,0 +1,18 @@
+{
+  "chainId": 1404,
+  "name": "BlockDAG",
+  "currency": "BDAG",
+  "decimals": 18,
+  "rpcs": [
+    "https://rpc.welshdag.trade",
+    "https://rpc.blockdag.engineering"
+  ],
+  "explorers": [
+    "https://explorer.blockdag.engineering"
+  ],
+  "workshop": "0x897d85654c569e64dff78b90bfb7ebe12ee7a67d",
+  "genesis": "0x73a7eed42937e7f522557a82f3c6582ed10b11ddde1196c1bf9d8237ae756dab",
+  "openedAt": 1788890040,
+  "closedAt": 1796666040,
+  "seatBondWei": "1000000000000000000"
+}
