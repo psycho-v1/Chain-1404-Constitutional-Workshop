@@ -25,8 +25,14 @@
           <div class="col-4 stat"><b data-k="bond">—</b><span>Bond (BDAG)</span></div>
         </div>
       </div>
+            <div class="glass p-4 mb-3">
+        <label class="form-label" for="rpcBox">Community RPC</label>
+        <input id="rpcBox" class="form-control" placeholder="https://…" />
+        <button class="btn btn-ghost mt-2" type="button" id="saveRpc">Save RPC</button>
+      </div>
       <div class="glass p-4" id="mine">
-        <p class="mb-0" style="color:var(--muted)">Connect a wallet to see whether you already have a seat.</p>
+        <p class="mb-2" style="color:var(--muted)">Connect a wallet to see whether you already have a seat.</p>
+        <button class="btn btn-gold" type="button" data-wallet>Connect wallet</button>
       </div>
     </div>
     <div class="col-lg-5">
