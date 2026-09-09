@@ -4,10 +4,19 @@
   "currency": "BDAG",
   "decimals": 18,
   "rpcs": [
+    "https://rpc.east.bdag-us.org",
+    "https://rpc.west.bdag-us.org",
     "https://rpc.welshdag.trade",
-    "https://rpc.blockdag.engineering"
+    "https://rpc.capedag.com",
+    "https://rpc.dvdmining.com",
+    "https://rpc.blockdag.engineering",
+    "https://rms-bdag-rpc.de/api/rpc-live",
+    "https://rms-bdag-rpc.de/api/rpc-wallet"
   ],
   "explorers": [
+    "https://explorer.east.bdag-us.org",
+    "https://explorer.west.bdag-us.org",
+    "https://scan.welshdag.trade",
     "https://explorer.blockdag.engineering"
   ],
   "workshop": "0x897d85654c569e64dff78b90bfb7ebe12ee7a67d",
