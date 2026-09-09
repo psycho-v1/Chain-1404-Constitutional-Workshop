@@ -1,5 +1,6 @@
 (function (g) {
   const ART = ["", "Membership", "Governor", "Scope", "Infrastructure", "Amendment"];
+  const RPC_KEY = "cw1404.rpc";
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
@@ -29,8 +30,21 @@
     return a && !/^0x0{40}$/i.test(a);
   }
 
+  function savedRpc() {
+    try { return localStorage.getItem(RPC_KEY) || ""; } catch (_) { return ""; }
+  }
+
+  function allRpcs() {
+    const listed = (state.cfg && state.cfg.rpcs) || [];
+    const extra = savedRpc();
+    const out = [];
+    if (extra) out.push(extra);
+    listed.forEach((u) => { if (u && !out.includes(u)) out.push(u); });
+    return out;
+  }
+
   async function loadCfg() {
-    const tries = ["../launch.json", "./launch.json", "/launch.json"];
+    const tries = ["./launch.json", "launch.json"];
     for (const u of tries) {
       try {
         const r = await fetch(u, { cache: "no-store" });
@@ -42,14 +56,28 @@
       name: "BlockDAG",
       currency: "BDAG",
       decimals: 18,
-      rpcs: ["https://rpc.welshdag.trade", "https://rpc.blockdag.engineering"],
-      explorers: [],
+      rpcs: [
+        "https://rpc.east.bdag-us.org",
+        "https://rpc.west.bdag-us.org",
+        "https://rpc.welshdag.trade",
+        "https://rpc.capedag.com",
+        "https://rpc.dvdmining.com",
+        "https://rpc.blockdag.engineering",
+        "https://rms-bdag-rpc.de/api/rpc-live",
+        "https://rms-bdag-rpc.de/api/rpc-wallet"
+      ],
+      explorers: [
+        "https://explorer.east.bdag-us.org",
+        "https://explorer.west.bdag-us.org",
+        "https://scan.welshdag.trade",
+        "https://explorer.blockdag.engineering"
+      ],
       workshop: "0x897d85654c569e64dff78b90bfb7ebe12ee7a67d",
     };
   }
 
   function rpcProvider() {
-    const url = (state.cfg.rpcs || [])[0];
+    const url = allRpcs()[0];
     if (!url || !g.ethers) return null;
     return new g.ethers.JsonRpcProvider(url, Number(state.cfg.chainId));
   }
@@ -63,48 +91,63 @@
   }
 
   async function connect() {
-    const eth = g.ethereum;
-    if (!eth) {
-      toast("Open this site inside MetaMask Browser (phone) or use the MetaMask extension (computer).");
-      return;
-    }
-    const acc = await eth.request({ method: "eth_requestAccounts" });
-    state.account = acc[0];
-    const hexId = await eth.request({ method: "eth_chainId" });
-    state.chain = parseInt(hexId, 16);
-    const want = Number(state.cfg.chainId);
-    if (state.chain !== want) {
-      try {
-        await eth.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x" + want.toString(16) }],
-        });
-        state.chain = want;
-      } catch (err) {
-        if (err && err.code === 4902) {
+    try {
+      const eth = g.ethereum;
+      if (!eth) {
+        toast("Open this site inside MetaMask Browser (phone) or use the MetaMask extension (computer).");
+        return;
+      }
+      const acc = await eth.request({ method: "eth_requestAccounts" });
+      state.account = acc[0];
+      const hexId = await eth.request({ method: "eth_chainId" });
+      state.chain = parseInt(hexId, 16);
+      const want = Number(state.cfg.chainId);
+      const hex = "0x" + want.toString(16);
+      if (state.chain !== want) {
+        try {
           await eth.request({
-            method: "wallet_addEthereumChain",
-            params: [{
-              chainId: "0x" + want.toString(16),
-              chainName: state.cfg.name || "Chain 1404",
-              nativeCurrency: { name: state.cfg.currency || "BDAG", symbol: state.cfg.currency || "BDAG", decimals: state.cfg.decimals || 18 },
-              rpcUrls: state.cfg.rpcs || [],
-              blockExplorerUrls: state.cfg.explorers || [],
-            }],
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: hex }],
           });
           state.chain = want;
-        } else {
-          toast("Wrong network. Switch to chain " + want + ".");
-          return;
+        } catch (err) {
+          if (err && err.code === 4902) {
+            await eth.request({
+              method: "wallet_addEthereumChain",
+              params: [{
+                chainId: hex,
+                chainName: state.cfg.name || "Chain 1404",
+                nativeCurrency: {
+                  name: state.cfg.currency || "BDAG",
+                  symbol: state.cfg.currency || "BDAG",
+                  decimals: state.cfg.decimals || 18,
+                },
+                rpcUrls: allRpcs(),
+                blockExplorerUrls: state.cfg.explorers || [],
+              }],
+            });
+            state.chain = want;
+          } else {
+            toast("Wrong network. Switch to chain " + want + ".");
+            return;
+          }
         }
       }
+      const browser = new g.ethers.BrowserProvider(eth);
+      state.signer = await browser.getSigner();
+      state.account = await state.signer.getAddress();
+      const net = await browser.getNetwork();
+      state.chain = Number(net.chainId);
+      if (state.chain !== want) {
+        toast("Wallet is still on chain " + state.chain + ". Need " + want + ".");
+        return;
+      }
+      await bindRead();
+      paintWallet();
+      g.dispatchEvent(new Event("workshop:ready"));
+    } catch (err) {
+      toast((err && (err.shortMessage || err.message)) || "Wallet connect failed.");
     }
-    const browser = new g.ethers.BrowserProvider(eth, want);
-    state.signer = await browser.getSigner();
-    state.account = await state.signer.getAddress();
-    await bindRead();
-    paintWallet();
-    g.dispatchEvent(new Event("workshop:ready"));
   }
 
   function paintWallet() {
@@ -206,10 +249,10 @@
       Same: "That mark is already recorded.",
       Locked: "Please wait and try again.",
       NoCash: "Not enough BDAG in the wallet.",
-      user rejected: "You declined the wallet popup."
+      "user rejected": "You declined the wallet popup.",
     };
     try {
-      const opts = { gasLimit: 600000n, gasPrice: g.ethers.parseUnits("200", "gwei") };
+      const opts = {};
       if (value) opts.value = value;
       toast("Confirm in your wallet…");
       const tx = await c[fn](...args, opts);
@@ -393,19 +436,42 @@
     set("active", s.active);
     set("issued", s.issued);
     set("bond", s.seatBond && g.ethers ? g.ethers.formatEther(s.seatBond) : "—");
-    const mine = $("#mine");
-    if (mine && state.rec && state.account) {
-      const seat = await state.rec.seatOf(state.account);
-      const id = Number(seat.id);
-      mine.innerHTML = id
-        ? `<div class="kicker mb-2">Your seat</div><h3>#${id} · ${short(state.account)}</h3>
-           <p style="color:var(--muted)">Joined ${when(Number(seat.joinedAt))} · written ${seat.authored} · still open ${seat.unsealed}</p>
-           <button class="btn btn-ghost" id="rev">Give up this seat</button>`
-        : `<div class="kicker mb-2">No seat yet</div><p style="color:var(--muted)">Attest burns the seat bond. Giving it up is permanent for this wallet.</p>
-           <button class="btn btn-gold" id="join">Attest and sit</button>`;
-      $("#rev") && $("#rev").addEventListener("click", () => send("revoke", []));
-      $("#join") && $("#join").addEventListener("click", () => send("attest", [], s.seatBond));
+    const box = $("#rpcBox");
+    if (box) box.value = savedRpc() || (allRpcs()[0] || "");
+    const save = $("#saveRpc");
+    if (save && !save.dataset.wired) {
+      save.dataset.wired = "1";
+      save.addEventListener("click", async () => {
+        const u = (($("#rpcBox") && $("#rpcBox").value) || "").trim();
+        if (!/^https:\/\//i.test(u)) return toast("RPC must start with https://");
+        try { localStorage.setItem(RPC_KEY, u); } catch (_) {}
+        toast("Saved. Using that community RPC for reads.");
+        await bindRead();
+        seats();
+      });
     }
+    const mine = $("#mine");
+    if (!mine) return;
+    if (!state.account) {
+      mine.innerHTML = `<p class="mb-2" style="color:var(--muted)">Connect a wallet first, then attest.</p>
+        <button class="btn btn-gold" type="button" data-wallet>Connect wallet</button>`;
+      mine.querySelector("[data-wallet]")?.addEventListener("click", connect);
+      return;
+    }
+    if (!state.rec) {
+      mine.innerHTML = `<p style="color:var(--muted)">Connected, but the record RPC did not load. Paste another community RPC above.</p>`;
+      return;
+    }
+    const seat = await state.rec.seatOf(state.account);
+    const id = Number(seat.id);
+    mine.innerHTML = id
+      ? `<div class="kicker mb-2">Your seat</div><h3>#${id} · ${short(state.account)}</h3>
+         <p style="color:var(--muted)">Joined ${when(Number(seat.joinedAt))} · written ${seat.authored} · still open ${seat.unsealed}</p>
+         <button class="btn btn-ghost" id="rev" type="button">Give up this seat</button>`
+      : `<div class="kicker mb-2">No seat yet</div><p style="color:var(--muted)">Attest burns the seat bond. Giving it up is permanent for this wallet.</p>
+         <button class="btn btn-gold" id="join" type="button">Attest and sit</button>`;
+    $("#rev") && $("#rev").addEventListener("click", () => send("revoke", []));
+    $("#join") && $("#join").addEventListener("click", () => send("attest", [], s.seatBond));
   }
 
   function escapeHtml(s) {
